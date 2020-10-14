@@ -1,5 +1,4 @@
 git+https://github.com/Rapptz/discord.py
-git+https://github.com/motdotla/dotenv
 PyNaCl==1.5.0
 pandas
 numpy==1.19.2
