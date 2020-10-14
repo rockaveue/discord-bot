@@ -72,17 +72,21 @@ async def clear_error(ctx, error):
         await ctx.send('asd')
 
 @bot.command()
+@commands.check(is_it_me)
 async def load(ctx, extension):
     bot.load_extension(f'cogs.{extension}')
 
 @bot.command()
+@commands.check(is_it_me)
 async def unload(ctx, extension):
     bot.unload_extension(f'cogs.{extension}')
     bot.load_extension(f'cogs.{extension}')
     
 @bot.command()
+@commands.check(is_it_me)
 async def reload(ctx, extension):
     bot.unload_extension(f'cogs.{extension}')
+    bot.load_extension(f'cogs.{extension}')
 
 for filename in os.listdir('./cogs'):
     if filename.endswith('.py'):
