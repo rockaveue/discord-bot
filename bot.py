@@ -2,6 +2,7 @@
 import os
 import re
 import discord
+import json
 import numpy as np
 from dotenv import load_dotenv
 from discord.ext import commands,tasks
@@ -9,18 +10,54 @@ from itertools import cycle
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
-bot = commands.Bot(command_prefix='--')
+def get_prefix(client, message):
+    with open('prefixes.json', 'r') as f:
+        prefixes = json.load(f)
+    return prefixes[str(message.guild.id)]
+
+bot = commands.Bot(command_prefix = get_prefix)
 status = cycle(['hithere', 'prefix(--)', '--help'])
+texts = ['hithere', 'prefix(--)', '--help']
+def is_it_me(ctx):
+    return ctx.author.id == 413609867258101760
+
 @bot.event
 async def on_ready():
     change_status.start()
     #await bot.change_presence(activity=discord.Game('prefix(--)'), status=discord.Status.idle)
     #await change_presence(game=discord.Game(name="hithere", type=1))
     print('Logged on.')
-#activity status
-@tasks.loop(seconds=5)
-async def change_status():
-    await bot.change_presence(activity=discord.Game(next(status)))
+
+@bot.event
+async def on_guild_join(guild):
+    with open('prefixes.json', 'r') as f:
+        prefixes = json.load(f)
+    prefixes[str(guild.id)] = '--'
+    with open('prefixes.json', 'w') as f:
+        json.dump(prefixes, f, indent = 4)
+
+@bot.event
+async def on_guild_remove(guild):
+    with open('prefixes.json', 'r') as f:
+        prefixes = json.load(f)
+    prefixes.pop(str(guild.id))
+    with open('prefixes.json', 'w') as f:
+        json.dump(prefixes, f, indent = 4)
+
+@bot.command()
+@commands.has_permissions(administrator = True)
+async def changePrefix(ctx, prefix):
+    with open('prefixes.json', 'r') as f:
+        prefixes = json.load(f)
+    prefixes[str(ctx.guild.id)] = prefix
+    texts[1] = 'prefix('+prefix+')'
+    texts[2] = prefix+'help'
+    status = cycle(['hithere', f'prefix({texts[1]})', f'{texts[2]}help'])
+    with open('prefixes.json', 'w') as f:
+        json.dump(prefixes, f, indent = 4)
+    #client.loop.create_task(bot.change_presence(activity=discord.Game(next(cycle(texts)))))
+    await ctx.send(f'Prefix {prefix} болж солигдлоо' )
+
 #commands
 @bot.command()
 async def pzda(ctx):
@@ -53,12 +90,10 @@ async def on_command_error(ctx, error):
         #await ctx.send('шаардлагатай утгуудыг оруулна уу')
 
 @bot.command()
-@commands.has_permissions(manage_messages=True)
+@commands.check(is_it_me)
 async def clear(ctx, arg1 : int):
     await ctx.channel.purge(limit=arg1)
     
-def is_it_me(ctx):
-    return ctx.author.id == 413609867258101760
 
 @bot.command()
 @commands.check(is_it_me)
@@ -80,7 +115,6 @@ async def load(ctx, extension):
 @commands.check(is_it_me)
 async def unload(ctx, extension):
     bot.unload_extension(f'cogs.{extension}')
-    bot.load_extension(f'cogs.{extension}')
     
 @bot.command()
 @commands.check(is_it_me)
@@ -92,6 +126,10 @@ for filename in os.listdir('./cogs'):
     if filename.endswith('.py'):
         bot.load_extension(f'cogs.{filename[:-3]}')
 
+#activity status
+@tasks.loop(seconds=5)
+async def change_status():
+    await bot.change_presence(activity=discord.Game(next(cycle(status))))
 
 #vc shit
 sedev1 = np.array(['Улс төр', 'Эдийн засаг', 'Анимэ', 'Кино урлаг'])
@@ -122,23 +160,5 @@ async def testRealChange(member, voice_channel):
 """ async def testChange(ctx, channel: discord.VoiceChannel):
     await channel.edit(name='zda') """
 
-
-#hereggui
-class MyClient(discord.Client):
-    async def on_ready(self):
-        print('Logged on as', self.user)
-
-    async def on_message(self, message):
-        # don't respond to ourselves
-        if message.author == self.user:
-            return
-
-        if message.content == 'ping':
-            await message.channel.send('pong')
-        
-        if message.content == 'gay':
-            await message.channel.send('nomon')
-client = MyClient()
-# client.run(TOKEN)
 bot.run(TOKEN)
 """client.run("NzYwODg1MDY1NDQ1MTQ2NjI0.X3SjcA.kMfl8iqJByXvHXHHusoCjEC8Y7Y") """
