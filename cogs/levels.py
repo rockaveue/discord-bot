@@ -7,12 +7,12 @@ class Levels(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.bot.loop.create_task(self.save_users())
-        with open(r'C:\Users\ra\Desktop\pythonstf\dis\cogs\userss.json','r') as f:
+        with open(r'userss.json','r') as f:
             self.users = json.load(f)
     async def save_users(self):
         await self.bot.wait_until_ready()
         while not self.bot.is_closed():
-            with open(r'C:\Users\ra\Desktop\pythonstf\dis\cogs\userss.json','w') as f:
+            with open(r'userss.json','w') as f:
                 json.dump(self.users, f)
             await asyncio.sleep(5)
                 
