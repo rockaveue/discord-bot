@@ -7,6 +7,7 @@ import asyncio
 import numpy as np
 from dotenv import load_dotenv
 from discord.ext import commands,tasks
+from discord.utils import get
 from itertools import cycle
 
 load_dotenv()
@@ -17,18 +18,23 @@ def get_prefix(client, message):
     with open('prefixes.json', 'r') as f:
         prefixes = json.load(f)
     return prefixes[str(message.guild.id)]
+
 #namaig shalgah
 def is_it_me(ctx):
     return ctx.author.id == 413609867258101760
+
 #utga onooj bn
 intents = discord.Intents.default()
 intents.members = True
 #client = discord.Client(intents=intents)
 bot = commands.Bot(command_prefix = get_prefix, intents=intents)
+
 status = cycle(['hithere', 'prefix(--)', '--help'])
 texts = ['hithere', 'prefix(--)', '--help']
 myguild = 760862411564515368
 m = {}
+rname = "role"
+rnumber = 0
 @bot.event
 async def on_ready():
     print('Logged on.')
@@ -52,7 +58,7 @@ async def on_ready():
         for member in guild.members:
             if not member.bot:
                 #print(member)
-                m[str(member.id)] = {"xp" : 0, "messageCountdown" : 0}
+                m[str(member.id)] = {"level" : 1, "xp" : 0, "messageCountdown" : 0, "stage" : 0}
                 with open("users.json", "w") as j:
                     json.dump(m, j, indent=4) 
     #await bot.change_presence(activity=discord.Game('prefix(--)'), status=discord.Status.idle)
@@ -67,11 +73,19 @@ async def on_ready():
             pass
         await asyncio.sleep(1)
 
+
+#activity status
+@tasks.loop(seconds=5)
+async def change_status():
+    #await bot.change_presence(activity=discord.Game(next(cycle(texts))))
+    await bot.change_presence(activity=discord.Game('depressed game'))
+
+
 @bot.event
 async def on_member_join(member):
     """ channel = discord.utils.get(member.guild.text_channels, name="join-leave")
     await channel.send(f"{member} орж ирлээ!") """
-    m[str(member.id)] = {"xp" : 0, "messageCountdown" : 0}
+    m[str(member.id)] = {"level": 1, "xp" : 0, "messageCountdown" : 0, "stage" : 0}
     channel = bot.get_channel(760884501969895496) # replace id with the welcome channel's id
     await channel.send(f"{member.mention} has arrived!")
 @bot.event
@@ -138,13 +152,13 @@ async def users(ctx):
     await ctx.send(f"# of members: {ctx.guild.member_count}")
 
 @bot.command()
-async def text(ctx):
-    msg = await ctx.channel.send(' the text ')
+async def madge(ctx):
+    msg = await ctx.channel.send('R u mad?')
     await msg.add_reaction(str(discord.utils.get(bot.emojis, name='Madge')))
 
 @bot.command()
 async def getcd(ctx):
-    await ctx.send(m[str(ctx.author.id)]['messageCountdown'])
+    await ctx.send(f"{m[str(ctx.author.id)]['messageCountdown']} секунд дутуу байна")
     
 @bot.command()
 async def xp(ctx):
@@ -160,11 +174,11 @@ async def level(ctx):
             
     #embed.add_field(name='Level', value=self.users[member_id]['level'])
     embed.add_field(name='XP', value=m[member_id]['xp'])
-    embed.add_field(name='Level', value='Өнөө маргаашдаа нэмнээ')
+    embed.add_field(name='Level', value=m[member_id]['level'])
     await ctx.send(embed=embed)
 
 @bot.command()
-async def getxpa(ctx, member : discord.Member):
+async def getxp(ctx, member : discord.Member):
     await ctx.send(f"{member.mention}-д {m[str(member.id)]['xp']}xp байна.")
     
 bot.remove_command('help')
@@ -197,8 +211,19 @@ async def on_reaction_add(reaction, user):
 async def on_command_error(ctx, error):
     if isinstance(error, commands.CommandNotFound):
         await ctx.send('комманд олдсонгүй')
-    #if isinstance(error, commands.MissingRequiredArgument):
-        #await ctx.send('шаардлагатай утгуудыг оруулна уу')
+    if isinstance(error, commands.MissingRequiredArgument):
+        await ctx.send('шаардлагатай утгуудыг оруулна уу')
+
+@bot.command()
+@commands.check(is_it_me)
+async def addxp(ctx, arg1 : int):
+    m[str(ctx.author.id)]['xp'] += arg1
+    await ctx.send(f"xp-г чинь нэмээд {m[str(ctx.author.id)]['xp']} болгоцон шүү")
+@bot.command()
+#@commands.check(is_it_me)
+async def subxp(ctx, arg1 : int):
+    m[str(ctx.author.id)]['xp'] -= arg1
+    await ctx.send(f"xp-гээ чи өөрөө л хасаад {m[str(ctx.author.id)]['xp']} болгосон, би буруугүй шүү")
 
 @bot.command()
 @commands.check(is_it_me)
@@ -236,11 +261,6 @@ for filename in os.listdir('./cogs'):
     if filename.endswith('.py'):
         bot.load_extension(f'cogs.{filename[:-3]}')
 
-#activity status
-@tasks.loop(seconds=5)
-async def change_status():
-    await bot.change_presence(activity=discord.Game(next(cycle(status))))
-
 #vc shit
 sedev1 = np.array(['Улс төр', 'Эдийн засаг', 'Анимэ', 'Кино урлаг'])
 tempBol = False
@@ -270,6 +290,16 @@ async def testRealChange(member, voice_channel):
 """ async def testChange(ctx, channel: discord.VoiceChannel):
     await channel.edit(name='zda') """
 
+def lvl_up(id):
+    cur_xp = m[str(id)]['xp']
+    cur_lvl = m[str(id)]['level']
+        
+    if cur_xp > round((4 * (cur_lvl ** 3 )) / 5):
+        m[str(id)]['level'] += 1
+        return True
+    else: 
+        return False
+
 @bot.event
 async def on_message(message):
     id = str(message.author.id)
@@ -286,14 +316,28 @@ async def on_message(message):
         await message.channel.send(m[str(message.author.id)]["xp"]) """
     #elif message.author == bot.user:
     if not message.author.bot:
-        if m[str(message.author.id)]["messageCountdown"] <= 0:
-            m[str(message.author.id)]["xp"] += 10
-            m[str(message.author.id)]["messageCountdown"] = 10
+        if m[id]["messageCountdown"] <= 0:
+            m[id]["xp"] += 1
+            m[id]["messageCountdown"] = 10
+            if lvl_up(message.author.id):
+                await message.channel.send(f"{message.author.mention} level ахиж {m[id]['level']} боллоо")
+                if m[id]["stage"] * 5 < m[id]["level"]:
+                    m[id]["stage"] += 1
+                    Role = discord.utils.get(message.guild.roles, name=rname + str(m[id]["stage"]))
+                    await message.author.add_roles(Role)
+                    await message.channel.send(f"{message.author.mention}, {Role}-г авлаа")
+                
             with open("users.json", "w") as j:
                 json.dump(m, j, indent=4)
-            
     await bot.process_commands(message)
 
+@bot.command()
+@commands.has_permissions(administrator = True)
+async def testRole(ctx):
+    member = ctx.message
+    Role = discord.utils.get(member.guild.roles, name="role1")
+    await member.author.add_roles(Role)
+    await ctx.send(f"{member.author.mention}, {Role} role-той боллоо")
 
 
 bot.run(TOKEN)
