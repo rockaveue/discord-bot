@@ -2,6 +2,7 @@
 import os
 import re
 import discord
+import youtube_dl
 import json
 import asyncio
 import numpy as np
@@ -17,6 +18,7 @@ TOKEN = os.getenv('DISCORD_TOKEN')
 def get_prefix(client, message):
     with open('prefixes.json', 'r') as f:
         prefixes = json.load(f)
+        f.close()
     return prefixes[str(message.guild.id)]
 
 #namaig shalgah
@@ -53,6 +55,7 @@ async def on_ready():
     with open("users.json", "r") as j:
         m = json.load(j)
         j.close()
+    
     if len(m) == 0:
         m = {}
         for member in guild.members:
@@ -60,7 +63,8 @@ async def on_ready():
                 #print(member)
                 m[str(member.id)] = {"level" : 1, "xp" : 0, "messageCountdown" : 0, "stage" : 0}
                 with open("users.json", "w") as j:
-                    json.dump(m, j, indent=4) 
+                    json.dump(m, j, indent=4)
+                    j.close()
     #await bot.change_presence(activity=discord.Game('prefix(--)'), status=discord.Status.idle)
     #await change_presence(game=discord.Game(name="hithere", type=1))
     while True:
@@ -92,17 +96,21 @@ async def on_member_join(member):
 async def on_guild_join(guild):
     with open('prefixes.json', 'r') as f:
         prefixes = json.load(f)
+        f.close()
     prefixes[str(guild.id)] = '--'
     with open('prefixes.json', 'w') as f:
         json.dump(prefixes, f, indent = 4)
+        f.close()
 
 @bot.event
 async def on_guild_remove(guild):
     with open('prefixes.json', 'r') as f:
         prefixes = json.load(f)
+        f.close()
     prefixes.pop(str(guild.id))
     with open('prefixes.json', 'w') as f:
         json.dump(prefixes, f, indent = 4)
+        f.close()
 
 @bot.command()
 @commands.has_permissions(administrator = True)
@@ -148,6 +156,11 @@ async def tushig(ctx):
     emoji = discord.utils.get(bot.emojis, name='KhurelSimp')
     await ctx.send(str(emoji))
 @bot.command()
+async def davaa(ctx):
+    emoji = discord.utils.get(bot.emojis, name='KEKW')
+    print(str(emoji))
+    await ctx.send(str(emoji))
+@bot.command()
 async def users(ctx):
     await ctx.send(f"# of members: {ctx.guild.member_count}")
 
@@ -176,11 +189,51 @@ async def level(ctx):
     embed.add_field(name='XP', value=m[member_id]['xp'])
     embed.add_field(name='Level', value=m[member_id]['level'])
     await ctx.send(embed=embed)
+@bot.command()
+async def levelm(ctx,member:discord.Member):
+    # member = ctx.author
+    member_id = str(member.id)
+    embed = discord.Embed(color = member.color)
+    """ , timestamp = ctx.message.created_at """
+    embed.set_author(name=f"level - {member}", icon_url=member.avatar_url)
+            
+    #embed.add_field(name='Level', value=self.users[member_id]['level'])
+    embed.add_field(name='XP', value=m[member_id]['xp'])
+    embed.add_field(name='Level', value=m[member_id]['level'])
+    await ctx.send(embed=embed)
 
 @bot.command()
 async def getxp(ctx, member : discord.Member):
     await ctx.send(f"{member.mention}-д {m[str(member.id)]['xp']}xp байна.")
     
+@bot.command()
+async def leaderboard(ctx):
+    d=[]
+    for key, value in m.items():
+        d.insert(0,[int(key), int(value['xp']), int(value['level'])])
+    d.sort(key = lambda x: x[1], reverse=True)
+    embed = discord.Embed(
+        color=discord.Colour(0x1e385b),
+        title="leaderboard"
+    )
+    text =""
+    textmen = ""
+    textxp = ""
+    textlvl =""
+    for i in range(5):
+        id = d[i][0]
+        xp = d[i][1]
+        lvl = d[i][2]
+        #text = text + f"{i+1}.\n"
+        textmen += f"{i+1}. {bot.get_user(id).mention} \n"
+        textxp += f"{xp}xp \n"
+        textlvl += f"{lvl} \n"
+    #embed.add_field(name = '№',value=text, inline=True)
+    embed.add_field(name = 'who?',value=textmen, inline=True)
+    embed.add_field(name = 'xp',value=textxp, inline=True)
+    embed.add_field(name = 'level',value=textlvl, inline=True)
+    await ctx.send(embed=embed)
+
 bot.remove_command('help')
 @bot.command(pass_context=True)
 async def help(ctx):
@@ -193,12 +246,6 @@ async def help(ctx):
     )
     embed.add_field(name='Командууд',value=helptext)
     await ctx.send(embed=embed)
-""" async def help(ctx):
-    helptext = "```"
-    for command in bot.commands:
-        helptext+=f"{command}\n"
-    helptext+="```"
-    await ctx.send(helptext) """    
 
 """ @bot.event
 async def on_reaction_add(reaction, user):
@@ -207,23 +254,58 @@ async def on_reaction_add(reaction, user):
     #CSGO = discord.utils.get(user.server.roles, name="CSGO_P")
     await bot.send_message(ChID, "sda") """
 #clear check
-@bot.event
+""" @bot.event
 async def on_command_error(ctx, error):
     if isinstance(error, commands.CommandNotFound):
         await ctx.send('комманд олдсонгүй')
     if isinstance(error, commands.MissingRequiredArgument):
-        await ctx.send('шаардлагатай утгуудыг оруулна уу')
+        await ctx.send('шаардлагатай утгуудыг оруулна уу') """
 
 @bot.command()
 @commands.check(is_it_me)
 async def addxp(ctx, arg1 : int):
     m[str(ctx.author.id)]['xp'] += arg1
-    await ctx.send(f"xp-г чинь нэмээд {m[str(ctx.author.id)]['xp']} болгоцон шүү")
+    await ctx.send(f"xp-г чинь одоо {m[str(ctx.author.id)]['xp']} болсон")
+@bot.command()
+@commands.check(is_it_me)
+async def addxpm(ctx, member : discord.Member, arg1 : int):
+    id = member.id
+    m[str(id)]['xp'] += arg1
+    await ctx.send(f"{member.mention}-н xp-г {m[str(id)]['xp']} болгоцон шүү")
+    cur_xp = m[str(id)]['xp']
+    cur_lvl = m[str(id)]['level']
+    levelAhisan = False
+    #      (4 * x^3)/5    
+    while cur_xp > round((4 * (cur_lvl ** 3 )) / 5):
+        cur_lvl += 1
+        m[str(id)]['level'] += 1
+        levelAhisan = True
+    if levelAhisan:
+        await ctx.send(f"{member.mention} level ахиж {m[str(id)]['level']} боллоо")
 @bot.command()
 #@commands.check(is_it_me)
 async def subxp(ctx, arg1 : int):
     m[str(ctx.author.id)]['xp'] -= arg1
+    if m[str(ctx.author.id)]['xp'] < 0:
+        m[str(ctx.author.id)]['xp'] = 0
     await ctx.send(f"xp-гээ чи өөрөө л хасаад {m[str(ctx.author.id)]['xp']} болгосон, би буруугүй шүү")
+@bot.command()
+@commands.check(is_it_me)
+async def subxpm(ctx, member : discord.Member, arg1 : int):
+    m[str(member.id)]['xp'] -= arg1
+    if m[str(member.id)]['xp'] < 0 :
+        m[str(member.id)]['xp'] = 0
+    await ctx.send(f"Хэн {member.mention}-ий xp-г хасаад {m[str(member.id)]['xp']} болгочвоо")
+    cur_xp = m[str(id)]['xp']
+    cur_lvl = m[str(id)]['level']
+    levelBuursan = False
+    #      (4 * x^3)/5    
+    while cur_xp < round((4 * (cur_lvl ** 3 )) / 5):
+        cur_lvl -= 1
+        m[str(id)]['level'] -= 1
+        levelBuursan = True
+    if levelBuursan:
+        await ctx.send(f"{member.mention} level буурч {m[str(id)]['level']} боллоо")
 
 @bot.command()
 @commands.check(is_it_me)
@@ -260,6 +342,82 @@ async def reload(ctx, extension):
 for filename in os.listdir('./cogs'):
     if filename.endswith('.py'):
         bot.load_extension(f'cogs.{filename[:-3]}')
+
+@bot.command(pass_context=True,aliases=['j'])
+async def join(ctx):
+    global voice
+    channel = ctx.message.author.voice.channel
+    voice = get(bot.voice_clients, guild = ctx.guild)
+    
+    if voice and voice.is_connected():
+        await voice.move_to(channel)
+    else:
+        voice = await channel.connect()
+        print(f"Bot server luu orloo server - {channel}\n")
+        
+    """ await voice.disconnect()
+    if voice and voice.is_connected():
+        await voice.move_to(channel)
+    else:
+        voice = await channel.connect() """
+    await ctx.send(f"{channel} руу орлоо")
+    
+@bot.command(pass_context=True,aliases=['l'])
+async def leave(ctx):
+    channel = ctx.message.author.voice.channel
+    voice = get(bot.voice_clients, guild = ctx.guild)
+    
+    if voice and voice.is_connected():
+        await voice.disconnect()
+        print(f"Bot {channel}-aas garlaa\n")
+        await ctx.send(f"{channel}-с гарлаа")
+    else:
+        print(f"Би ямар нэгэн channel-д байхгүй байна.\n")
+        
+
+@bot.command(pass_context=True,aliases=['p'])
+async def play(ctx, url:str):
+    song_there = os.path.isfile("song.mp3")
+    try:
+        if song_there:
+            os.remove("song.mp3")
+            print("huuchin duug ustgalaa")
+    except PermissionError:
+        print("trying to delete song file, but it's being played")
+        await ctx.send("aldaa: duu togloj baina")
+        return
+    
+    await ctx.send("боловсруулж байна")
+    
+    voice = get(bot.voice_clients, guild=ctx.guild)
+    
+    ydl_opts = {
+        'format' : 'bestaudio/best',
+        'postprocessors':[{
+            'key':'FFmpegExtractAudio',
+            'preferredcodec':'mp3',
+            'preferredquality':'192'
+        }],
+    }
+    
+    with youtube_dl.YoutubeDL(ydl_opts) as ydl:
+        print("tataj baina")
+        ydl.download([url])
+        
+    for file in os.listdir("./"):
+        if file.endswith(".mp3"):
+            name = file
+            print(f"renamed file : {file}\n")
+            os.rename(file,"song.mp3")
+    
+    voice.play(discord.FFmpegPCMAudio("song.mp3"), after = lambda e: print(f"{name} togluulj duuslaa"))
+    voice.source = discord.PCMVolumeTransformer(voice.source)
+    voice.source.volume = 0.05
+    
+    nname = name.rsplit("-", 2)
+    await ctx.send(f"Playing: {nname}")
+    print("playing\n")
+
 
 #vc shit
 sedev1 = np.array(['Улс төр', 'Эдийн засаг', 'Анимэ', 'Кино урлаг'])
@@ -329,13 +487,14 @@ async def on_message(message):
                 
             with open("users.json", "w") as j:
                 json.dump(m, j, indent=4)
+                j.close()
     await bot.process_commands(message)
 
 @bot.command()
 @commands.has_permissions(administrator = True)
 async def testRole(ctx):
-    member = ctx.message
-    Role = discord.utils.get(member.guild.roles, name="role1")
+    member = ctx.author
+    Role = discord.utils.get(member.guild.roles, name="testRole")
     await member.author.add_roles(Role)
     await ctx.send(f"{member.author.mention}, {Role} role-той боллоо")
 
