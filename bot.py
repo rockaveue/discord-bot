@@ -66,6 +66,7 @@ async def on_ready():
                     json.dump(m, j, indent=4)
                     j.close()
     #await bot.change_presence(activity=discord.Game('prefix(--)'), status=discord.Status.idle)
+    await bot.change_presence(activity=discord.Game('depressed game'))
     #await change_presence(game=discord.Game(name="hithere", type=1))
     while True:
         try:
@@ -79,10 +80,10 @@ async def on_ready():
 
 
 #activity status
-@tasks.loop(seconds=5)
-async def change_status():
-    #await bot.change_presence(activity=discord.Game(next(cycle(texts))))
-    await bot.change_presence(activity=discord.Game('depressed game'))
+# @tasks.loop(seconds=5)
+# async def change_status():
+#     #await bot.change_presence(activity=discord.Game(next(cycle(texts))))
+#     await bot.change_presence(activity=discord.Game('depressed game'))
 
 
 @bot.event
@@ -111,6 +112,12 @@ async def on_guild_remove(guild):
     with open('prefixes.json', 'w') as f:
         json.dump(prefixes, f, indent = 4)
         f.close()
+# @bot.event
+# async def on_message_delete(message):
+#     msg = str(message.author)+ 'deleted message in '+str(message.channel)+': '+str(message.content)
+#     channel = bot.get_channel(781195212222890024)
+#     await channel.send(msg)
+    #print(msg)
 
 @bot.command()
 @commands.has_permissions(administrator = True)
@@ -343,24 +350,24 @@ for filename in os.listdir('./cogs'):
     if filename.endswith('.py'):
         bot.load_extension(f'cogs.{filename[:-3]}')
 
-@bot.command(pass_context=True,aliases=['j'])
-async def join(ctx):
-    global voice
-    channel = ctx.message.author.voice.channel
-    voice = get(bot.voice_clients, guild = ctx.guild)
+# @bot.command(pass_context=True,aliases=['j'])
+# async def join(ctx):
+#     global voice
+#     channel = ctx.message.author.voice.channel
+#     voice = get(bot.voice_clients, guild = ctx.guild)
     
-    if voice and voice.is_connected():
-        await voice.move_to(channel)
-    else:
-        voice = await channel.connect()
-        print(f"Bot server luu orloo server - {channel}\n")
+#     if voice and voice.is_connected():
+#         await voice.move_to(channel)
+#     else:
+#         voice = await channel.connect()
+#         print(f"Bot server luu orloo server - {channel}\n")
         
-    """ await voice.disconnect()
-    if voice and voice.is_connected():
-        await voice.move_to(channel)
-    else:
-        voice = await channel.connect() """
-    await ctx.send(f"{channel} руу орлоо")
+#     """ await voice.disconnect()
+#     if voice and voice.is_connected():
+#         await voice.move_to(channel)
+#     else:
+#         voice = await channel.connect() """
+#     await ctx.send(f"{channel} руу орлоо")
     
 @bot.command(pass_context=True,aliases=['l'])
 async def leave(ctx):
@@ -370,13 +377,24 @@ async def leave(ctx):
     if voice and voice.is_connected():
         await voice.disconnect()
         print(f"Bot {channel}-aas garlaa\n")
-        await ctx.send(f"{channel}-с гарлаа")
+        # await ctx.send(f"{channel}-с гарлаа")
     else:
+        await ctx.send(f"Намайг хаанаас гаргах гээд байгаан???")
         print(f"Би ямар нэгэн channel-д байхгүй байна.\n")
         
 
 @bot.command(pass_context=True,aliases=['p'])
 async def play(ctx, url:str):
+    
+    channel = ctx.message.author.voice.channel
+    voiceChannel = get(ctx.guild.voice_channels, name = channel)
+    voice = get(bot.voice_clients, guild = ctx.guild)
+    
+    if voice and voice.is_connected():
+        await voice.move_to(channel)
+    else:
+        voice = await channel.connect()
+        
     song_there = os.path.isfile("song.mp3")
     try:
         if song_there:
@@ -412,11 +430,40 @@ async def play(ctx, url:str):
     
     voice.play(discord.FFmpegPCMAudio("song.mp3"), after = lambda e: print(f"{name} togluulj duuslaa"))
     voice.source = discord.PCMVolumeTransformer(voice.source)
-    voice.source.volume = 0.05
+    voice.source.volume = 0.07
     
     nname = name.rsplit("-", 2)
-    await ctx.send(f"Playing: {nname}")
+    nname.pop()
+    '-'.join(nname)
+    embed = discord.Embed(color = 0x1e385b)
+    embed.add_field(name='Playing:', value = f"[{nname}]({url})")
+    
+    await ctx.channel.purge(limit=1)
+    # await ctx.send(f"Playing: {nname}")
+    await ctx.send(embed=embed)
     print("playing\n")
+
+@bot.command(pass_context=True)
+async def pause(ctx):
+    voice = get(bot.voice_clients, guild = ctx.guild)
+    if voice.is_playing():
+        voice_pause()
+    else:
+        await ctx.send("Тоглуулж байгаа дуу алга.")    
+        
+@bot.command(pass_context=True)
+async def resume(ctx):
+    voice = get(bot.voice_clients, guild = ctx.guild)
+    if voice.is_paused():
+        voice.resume()
+    else:
+        await ctx.send("Дуу зогсоогүй байна")
+        
+@bot.command(pass_context=True)
+async def stop(ctx):
+    voice = get(bot.voice_clients, guild = ctx.guild)
+    voice.stop()
+
 
 
 #vc shit
@@ -498,6 +545,10 @@ async def testRole(ctx):
     await member.author.add_roles(Role)
     await ctx.send(f"{member.author.mention}, {Role} role-той боллоо")
 
+@bot.command()
+@commands.has_permissions(administrator = True)
+async def changeCh(ctx, channel: discord.VoiceChannel, *, new_name):
+    await channel.edit(name = new_name)    
 
 bot.run(TOKEN)
 """client.run("NzYwODg1MDY1NDQ1MTQ2NjI0.X3SjcA.kMfl8iqJByXvHXHHusoCjEC8Y7Y") """

@@ -7,7 +7,7 @@
     },
     "297233717967978496": {
         "level": 1,
-        "xp": 0,
+        "xp": 1,
         "messageCountdown": -2,
         "stage": 0
     },
@@ -19,13 +19,13 @@
     },
     "327066853853757451": {
         "level": 7,
-        "xp": 206,
+        "xp": 212,
         "messageCountdown": -2,
         "stage": 0
     },
     "327067913347530753": {
         "level": 4,
-        "xp": 36,
+        "xp": 40,
         "messageCountdown": -2,
         "stage": 0
     },
@@ -36,8 +36,8 @@
         "stage": 0
     },
     "413609867258101760": {
-        "level": 7,
-        "xp": 270,
+        "level": 8,
+        "xp": 285,
         "messageCountdown": 10,
         "stage": 2
     },
@@ -49,8 +49,8 @@
     },
     "506861826894594058": {
         "level": 1,
-        "xp": 0,
-        "messageCountdown": -2,
+        "xp": 1,
+        "messageCountdown": 10,
         "stage": 0
     },
     "537653024068206594": {
