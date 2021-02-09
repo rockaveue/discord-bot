@@ -82,6 +82,7 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
             def _check(reaction, user):
                 return {
                     reaction.emoji in ("1️⃣", "2⃣", "3⃣", "4⃣", "5⃣") 
+                    #test
                     and user == ctx.author
                     and reaction.message.id == msg.id           
                 }
