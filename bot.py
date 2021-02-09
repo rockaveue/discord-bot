@@ -127,7 +127,7 @@ async def changePrefix(ctx, prefix):
     prefixes[str(ctx.guild.id)] = prefix
     texts[1] = 'prefix('+prefix+')'
     texts[2] = prefix+'help'
-    status = cycle(['hithere', f'prefix({texts[1]})', f'{texts[2]}help'])
+    # status = cycle(['hithere', f'prefix({texts[1]})', f'{texts[2]}help'])
     with open('prefixes.json', 'w') as f:
         json.dump(prefixes, f, indent = 4)
     #client.loop.create_task(bot.change_presence(activity=discord.Game(next(cycle(texts)))))
@@ -137,9 +137,9 @@ async def changePrefix(ctx, prefix):
 @bot.command()
 async def pzda(ctx):
     await ctx.send('pzda2')
-@bot.command()
-async def ping(ctx):
-    await ctx.send(f'pong {round(bot.latency * 1000)}ms')
+# @bot.command()
+# async def ping(ctx):
+#     await ctx.send(f'pong {round(bot.latency * 1000)}ms')
 @bot.command()
 async def zailpzda(ctx):
     await ctx.send('chi uuruu zail')
@@ -223,7 +223,6 @@ async def leaderboard(ctx):
         color=discord.Colour(0x1e385b),
         title="leaderboard"
     )
-    text =""
     textmen = ""
     textxp = ""
     textlvl =""
@@ -369,129 +368,129 @@ for filename in os.listdir('./cogs'):
 #         voice = await channel.connect() """
 #     await ctx.send(f"{channel} руу орлоо")
     
-@bot.command(pass_context=True,aliases=['l'])
-async def leave(ctx):
-    channel = ctx.message.author.voice.channel
-    voice = get(bot.voice_clients, guild = ctx.guild)
+# @bot.command(pass_context=True,aliases=['l'])
+# async def leave(ctx):
+#     channel = ctx.message.author.voice.channel
+#     voice = get(bot.voice_clients, guild = ctx.guild)
     
-    if voice and voice.is_connected():
-        await voice.disconnect()
-        print(f"Bot {channel}-aas garlaa\n")
-        # await ctx.send(f"{channel}-с гарлаа")
-    else:
-        await ctx.send(f"Намайг хаанаас гаргах гээд байгаан???")
-        print(f"Би ямар нэгэн channel-д байхгүй байна.\n")
+#     if voice and voice.is_connected():
+#         await voice.disconnect()
+#         print(f"Bot {channel}-aas garlaa\n")
+#         # await ctx.send(f"{channel}-с гарлаа")
+#     else:
+#         await ctx.send(f"Намайг хаанаас гаргах гээд байгаан???")
+#         print(f"Би ямар нэгэн channel-д байхгүй байна.\n")
         
 
-@bot.command(pass_context=True,aliases=['p'])
-async def play(ctx, url:str):
+# @bot.command(pass_context=True,aliases=['p'])
+# async def play(ctx, url:str):
     
-    channel = ctx.message.author.voice.channel
-    voiceChannel = get(ctx.guild.voice_channels, name = channel)
-    voice = get(bot.voice_clients, guild = ctx.guild)
+#     channel = ctx.message.author.voice.channel
+#     voiceChannel = get(ctx.guild.voice_channels, name = channel)
+#     voice = get(bot.voice_clients, guild = ctx.guild)
     
-    if voice and voice.is_connected():
-        await voice.move_to(channel)
-    else:
-        voice = await channel.connect()
+#     if voice and voice.is_connected():
+#         await voice.move_to(channel)
+#     else:
+#         voice = await channel.connect()
         
-    song_there = os.path.isfile("song.mp3")
-    try:
-        if song_there:
-            os.remove("song.mp3")
-            print("huuchin duug ustgalaa")
-    except PermissionError:
-        print("trying to delete song file, but it's being played")
-        await ctx.send("aldaa: duu togloj baina")
-        return
+#     song_there = os.path.isfile("song.mp3")
+#     try:
+#         if song_there:
+#             os.remove("song.mp3")
+#             print("huuchin duug ustgalaa")
+#     except PermissionError:
+#         print("trying to delete song file, but it's being played")
+#         await ctx.send("aldaa: duu togloj baina")
+#         return
     
-    await ctx.send("боловсруулж байна")
+#     await ctx.send("боловсруулж байна")
     
-    voice = get(bot.voice_clients, guild=ctx.guild)
+#     voice = get(bot.voice_clients, guild=ctx.guild)
     
-    ydl_opts = {
-        'format' : 'bestaudio/best',
-        'postprocessors':[{
-            'key':'FFmpegExtractAudio',
-            'preferredcodec':'mp3',
-            'preferredquality':'192'
-        }],
-    }
+#     ydl_opts = {
+#         'format' : 'bestaudio/best',
+#         'postprocessors':[{
+#             'key':'FFmpegExtractAudio',
+#             'preferredcodec':'mp3',
+#             'preferredquality':'192'
+#         }],
+#     }
     
-    with youtube_dl.YoutubeDL(ydl_opts) as ydl:
-        print("tataj baina")
-        ydl.download([url])
+#     with youtube_dl.YoutubeDL(ydl_opts) as ydl:
+#         print("tataj baina")
+#         ydl.download([url])
         
-    for file in os.listdir("./"):
-        if file.endswith(".mp3"):
-            name = file
-            print(f"renamed file : {file}\n")
-            os.rename(file,"song.mp3")
+#     for file in os.listdir("./"):
+#         if file.endswith(".mp3"):
+#             name = file
+#             print(f"renamed file : {file}\n")
+#             os.rename(file,"song.mp3")
     
-    voice.play(discord.FFmpegPCMAudio("song.mp3"), after = lambda e: print(f"{name} togluulj duuslaa"))
-    voice.source = discord.PCMVolumeTransformer(voice.source)
-    voice.source.volume = 0.07
+#     voice.play(discord.FFmpegPCMAudio("song.mp3"), after = lambda e: print(f"{name} togluulj duuslaa"))
+#     voice.source = discord.PCMVolumeTransformer(voice.source)
+#     voice.source.volume = 0.07
     
-    nname = name.rsplit("-", 2)
-    nname.pop()
-    '-'.join(nname)
-    embed = discord.Embed(color = 0x1e385b)
-    embed.add_field(name='Playing:', value = f"[{nname}]({url})")
+#     nname = name.rsplit("-", 2)
+#     nname.pop()
+#     '-'.join(nname)
+#     embed = discord.Embed(color = 0x1e385b)
+    # embed.add_field(name='Playing:', value = f"[{nname}]({url})")
     
-    await ctx.channel.purge(limit=1)
-    # await ctx.send(f"Playing: {nname}")
-    await ctx.send(embed=embed)
-    print("playing\n")
+#     await ctx.channel.purge(limit=1)
+#     # await ctx.send(f"Playing: {nname}")
+#     await ctx.send(embed=embed)
+#     print("playing\n")
 
-@bot.command(pass_context=True)
-async def pause(ctx):
-    voice = get(bot.voice_clients, guild = ctx.guild)
-    if voice.is_playing():
-        voice_pause()
-    else:
-        await ctx.send("Тоглуулж байгаа дуу алга.")    
+# @bot.command(pass_context=True)
+# async def pause(ctx):
+#     voice = get(bot.voice_clients, guild = ctx.guild)
+#     if voice.is_playing():
+#         voice_pause()
+#     else:
+#         await ctx.send("Тоглуулж байгаа дуу алга.")    
         
-@bot.command(pass_context=True)
-async def resume(ctx):
-    voice = get(bot.voice_clients, guild = ctx.guild)
-    if voice.is_paused():
-        voice.resume()
-    else:
-        await ctx.send("Дуу зогсоогүй байна")
+# @bot.command(pass_context=True)
+# async def resume(ctx):
+#     voice = get(bot.voice_clients, guild = ctx.guild)
+#     if voice.is_paused():
+#         voice.resume()
+#     else:
+#         await ctx.send("Дуу зогсоогүй байна")
         
-@bot.command(pass_context=True)
-async def stop(ctx):
-    voice = get(bot.voice_clients, guild = ctx.guild)
-    voice.stop()
+# @bot.command(pass_context=True)
+# async def stop(ctx):
+#     voice = get(bot.voice_clients, guild = ctx.guild)
+#     voice.stop()
 
 
 
 #vc shit
 sedev1 = np.array(['Улс төр', 'Эдийн засаг', 'Анимэ', 'Кино урлаг'])
 tempBol = False
-""" @bot.command()
-async def add(ctx, str):
-    for i in sedev1:
-        if sedev1[i] == str:
-            tempBol = True
-            break
-    if tempBol:
-        ctx.send('Байдаг сэдэв байна, бро')
-    np.append(sedev1, str)
-    ctx.send('Сэдэв нэмэгдлээ.')
-@bot.event
-async def testChange(member, before, after):
-    if before.channel:
-        await testRealChange(member, before.channel)
-    if after.channel:
-        await testRealChange(member, after.channel)
-async def testRealChange(member, voice_channel):
-    try:
-        p = re.compile('(.*)\s\((.*?)\)')
-        m = p.search(voice_channel.name)
-        await voice_channel.edit(name = "zda")
-    except Forbidden:
-        print("permission algaa") """
+# @bot.command()
+# async def add(ctx, str):
+#     for i in sedev1:
+#         if sedev1[i] == str:
+#             tempBol = True
+#             break
+#     if tempBol:
+#         ctx.send('Байдаг сэдэв байна, бро')
+#     np.append(sedev1, str)
+#     ctx.send('Сэдэв нэмэгдлээ.')
+# @bot.event
+# async def testChange(member, before, after):
+#     if before.channel:
+#         await testRealChange(member, before.channel)
+#     if after.channel:
+#         await testRealChange(member, after.channel)
+# async def testRealChange(member, voice_channel):
+#     try:
+#         p = re.compile('(.*)\s\((.*?)\)')
+#         m = p.search(voice_channel.name)
+#         await voice_channel.edit(name = "zda")
+#     except Forbidden:
+#         print("permission algaa")
 """ async def testChange(ctx, channel: discord.VoiceChannel):
     await channel.edit(name='zda') """
 
