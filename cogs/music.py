@@ -115,7 +115,7 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
     
     async def repeat_one(self, ctx):
         player = self.bot.wavelink.get_player(ctx.guild.id)
-        await player.play(queue[self.queue_index])
+        await player.play(self.queue[self.queue_index])
     
     async def repeat_all(self, ctx):
         player = self.bot.wavelink.get_player(ctx.guild.id)
@@ -126,7 +126,7 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
     
     async def repeat_none(self, ctx):
         player = self.bot.wavelink.get_player(ctx.guild.id)
-        await player.play(queue[0])
+        await player.play(self.queue[0])
     
     @wavelink.WavelinkMixin.listener()
     async def on_track_end(self, node, payload):
