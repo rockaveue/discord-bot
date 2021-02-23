@@ -5,7 +5,7 @@ import discord
 import youtube_dl
 import json
 import asyncio
-import numpy as np
+# import numpy as np
 from dotenv import load_dotenv
 from discord.ext import commands,tasks
 from discord.utils import get
@@ -466,7 +466,7 @@ for filename in os.listdir('./cogs'):
 
 
 #vc shit
-sedev1 = np.array(['Улс төр', 'Эдийн засаг', 'Анимэ', 'Кино урлаг'])
+# sedev1 = np.array(['Улс төр', 'Эдийн засаг', 'Анимэ', 'Кино урлаг'])
 tempBol = False
 # @bot.command()
 # async def add(ctx, str):
