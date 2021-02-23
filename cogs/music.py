@@ -63,9 +63,9 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
         await self.bot.wait_until_ready()
         
         await self.bot.wavelink.initiate_node(
-            host = '0.0.0.0',#127.0.0.1
-            port = 'DYNAMICPORT',
-            rest_uri = 'http://127.0.0.1:7000',
+            host = '127.0.0.1',#127.0.0.1
+            port = '33070',
+            rest_uri = 'http://127.0.0.1:33070',
             password = 'hithere',
             identifier = 'TEST',
             region = 'hong_kong'
