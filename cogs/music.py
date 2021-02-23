@@ -65,7 +65,7 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
         await self.bot.wavelink.initiate_node(
             host = 'git.heroku.com/dis-lavalink.git',#127.0.0.1
             port = '80',#7000
-            rest_uri = 'git.heroku.com/dis-lavalink.git:80',
+            rest_uri = 'http://git.heroku.com/dis-lavalink.git:80',
             password = 'hithere',
             identifier = 'TEST',
             region = 'hong_kong'
