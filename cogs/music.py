@@ -274,6 +274,10 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
         await ctx.send('c u next time')
         await player.disconnect()
         
+    @commands.command()
+    async def recon(self, ctx):
+        self.start_nodes() 
+
     @commands.command(name = "repeat")
     async def repeat_command(self, ctx, *, type: str):
         # off, 1, all
