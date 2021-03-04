@@ -77,6 +77,12 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
         await self.start_nodes()
         print("we're back")
     
+    @commands.command()
+    async def release(self):
+        await self.bot.wavelink.node.destroy()
+        print('destroyed')
+    
+    
     async def search(self, ctx, query):
         tracks = await self.bot.wavelink.get_tracks(f"ytsearch:{query}")
         
