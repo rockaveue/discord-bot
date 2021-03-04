@@ -236,7 +236,7 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
         print(self.queue_index)
         
         if ctx.author.id == 327066853853757451:
-            ctx.send(f'{ctx.author.mention}stupid fuck')
+            await ctx.send(f'{ctx.author.mention}stupid fuck')
             
 
     @commands.command(name = 'pause', aliases = ['stfu'])
