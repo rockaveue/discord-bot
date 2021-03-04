@@ -73,7 +73,9 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
     
     @wavelink.WavelinkMixin.listener()
     async def on_websocket_closed(self, node, payload):
+        print("websocket shutoff")
         self.start_nodes()
+        print("we're back")
     
     async def search(self, ctx, query):
         tracks = await self.bot.wavelink.get_tracks(f"ytsearch:{query}")
