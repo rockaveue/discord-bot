@@ -74,7 +74,7 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
     @wavelink.WavelinkMixin.listener()
     async def on_websocket_closed(self, node, payload):
         print("websocket shutoff")
-        self.start_nodes()
+        await self.start_nodes()
         print("we're back")
     
     async def search(self, ctx, query):
@@ -276,7 +276,7 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
         
     @commands.command()
     async def recon(self, ctx):
-        self.start_nodes() 
+        await self.start_nodes() 
 
     @commands.command(name = "repeat")
     async def repeat_command(self, ctx, *, type: str):
