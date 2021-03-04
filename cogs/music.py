@@ -71,8 +71,8 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
             region = 'europe'
         )
     
-    @wavelink.WavelinkMixin.listener(event = 'on_websocket_closed')
-    async def recon(self, node, payload):
+    @wavelink.WavelinkMixin.listener()
+    async def on_websocket_closed(self, node, payload):
         self.start_nodes()
     
     async def search(self, ctx, query):
