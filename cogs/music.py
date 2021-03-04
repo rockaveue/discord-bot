@@ -70,7 +70,11 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
             identifier = 'TEST',
             region = 'europe'
         )
-        
+    
+    @wavelink.WavelinkMixin.listener(event = 'on_websocket_closed')
+    async def recon(self, node, payload):
+        self.start_nodes()
+    
     async def search(self, ctx, query):
         tracks = await self.bot.wavelink.get_tracks(f"ytsearch:{query}")
         
