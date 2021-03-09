@@ -515,13 +515,13 @@ async def on_message(message):
     global m
     
     #if message.content == "--stowp" and message.author.id == 413609867258101760:
-    """ if not id in m:
-        m[id] = {"xp" : 0, "messageCountdown" : 0}
-        with open("users.json", "w") as j:
-            json.dump(m, j) """
-        #await bot.close()
-    """ if message == "--xp":
-        await message.channel.send(m[str(message.author.id)]["xp"]) """
+    # if not id in m:
+    #     m[id] = {"xp" : 0, "messageCountdown" : 0}
+    #     with open("users.json", "w") as j:
+    #         json.dump(m, j)
+    #     #await bot.close()
+    # if message == "--xp":
+    #     await message.channel.send(m[str(message.author.id)]["xp"])
     #elif message.author == bot.user:
     if not message.author.bot:
         if m[id]["messageCountdown"] <= 0:
