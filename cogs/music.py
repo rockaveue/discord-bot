@@ -63,9 +63,12 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
         await self.bot.wait_until_ready()
         
         await self.bot.wavelink.initiate_node(
-            host = 'dis-lavalink.herokuapp.com',#127.0.0.1 dis-lavalink.herokuapp.com
-            port = 80,#7000 80
-            rest_uri = 'http://dis-lavalink.herokuapp.com:80',
+            # host = 'dis-lavalink.herokuapp.com',
+            host = '127.0.0.1',
+            # port = 80,
+            port = 7000,
+            # rest_uri = 'http://dis-lavalink.herokuapp.com:80',
+            rest_uri = 'http://127.0.0.1:7000',
             password = 'hithere',
             identifier = 'TEST',
             region = 'europe'
@@ -76,11 +79,6 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
         print("websocket shutoff")
         await self.start_nodes()
         print("we're back")
-    
-    @commands.command()
-    async def release(self):
-        await self.bot.wavelink.node.destroy()
-        print('destroyed')
     
     
     async def search(self, ctx, query):
@@ -279,9 +277,16 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
         player = self.bot.wavelink.get_player(ctx.guild.id)
         await ctx.send('c u next time')
         await player.disconnect()
+    
+    
+    async def release(self):
+        await self.bot.wavelink.destroy_node(identifier = 'TEST')
+        print('destroyed')
         
     @commands.command()
     async def recon(self, ctx):
+        if not self.bot.wavelink.get_node(identifier = 'TEST') == 'None':
+            self.release()
         await self.start_nodes() 
 
     @commands.command(name = "repeat")

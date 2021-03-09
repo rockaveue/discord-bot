@@ -244,8 +244,12 @@ bot.remove_command('help')
 @bot.command(pass_context=True)
 async def help(ctx):
     helptext = ""
+    i = 1
     for command in bot.commands:
-        helptext+=f"{command}\n"
+        helptext+=f"{command}\t"
+        i = i + 1
+        if i % 3 == 0:
+            helptext += "\n"
     #helptext+="\t"
     embed = discord.Embed(
         color=discord.Colour(0x1e385b)
@@ -504,7 +508,7 @@ def lvl_up(id):
     else: 
         return False
 
-@bot.event
+""" @bot.event
 async def on_message(message):
     id = str(message.author.id)
     #if not user.id in users:
@@ -534,7 +538,7 @@ async def on_message(message):
             with open("users.json", "w") as j:
                 json.dump(m, j, indent=4)
                 j.close()
-    await bot.process_commands(message)
+    await bot.process_commands(message) """
 
 @bot.command()
 @commands.has_permissions(administrator = True)
@@ -546,7 +550,11 @@ async def testRole(ctx):
 
 @bot.command()
 @commands.has_permissions(administrator = True)
-async def changeCh(ctx, channel: discord.VoiceChannel, *, new_name):
+async def changeCh(ctx, *, new_name):
+    await ctx.author.voice.channel.edit(name = new_name)    
+@bot.command()
+@commands.has_permissions(administrator = True)
+async def changeCh1(ctx, channel: discord.VoiceChannel, *, new_name):
     await channel.edit(name = new_name)    
 
 bot.run(TOKEN)
