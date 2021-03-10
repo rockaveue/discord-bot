@@ -286,7 +286,7 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
     @commands.command()
     async def recon(self, ctx):
         if not self.bot.wavelink.get_node(identifier = 'TEST') == 'None':
-            self.release()
+            await self.release()
         await self.start_nodes() 
 
     @commands.command(name = "repeat")
