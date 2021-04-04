@@ -168,8 +168,8 @@ async def tushig(ctx):
     await ctx.send(str(emoji))
 @bot.command()
 async def tenger(ctx):
-    emoji = discord.utils.get(bot.emojis, name='regional_indicator_f')
-    await ctx.send(str(emoji))
+    emoji = ":regional_indicator_f:"
+    await ctx.send(emoji)
 @bot.command()
 async def davaa(ctx):
     emoji = discord.utils.get(bot.emojis, name='KEKW')
