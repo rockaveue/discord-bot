@@ -159,8 +159,16 @@ async def duk(ctx):
     emoji = discord.utils.get(bot.emojis, name='Sadjaa')
     await ctx.send(str(emoji))
 @bot.command()
+async def khinami(ctx):
+    emoji = discord.utils.get(bot.emojis, name='Madge')
+    await ctx.send(str(emoji))
+@bot.command()
 async def tushig(ctx):
     emoji = discord.utils.get(bot.emojis, name='KhurelSimp')
+    await ctx.send(str(emoji))
+@bot.command()
+async def tenger(ctx):
+    emoji = discord.utils.get(bot.emojis, name='regional_indicator_f')
     await ctx.send(str(emoji))
 @bot.command()
 async def davaa(ctx):
