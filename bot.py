@@ -7,13 +7,14 @@ import json
 import asyncio
 import random
 # import numpy as np
-from dotenv import load_dotenv
+# from dotenv import load_dotenv
 from discord.ext import commands,tasks
 from discord.utils import get
 from itertools import cycle
 
-load_dotenv()
-TOKEN = os.getenv('DISCORD_TOKEN')
+# load_dotenv()
+# TOKEN = os.getenv('DISCORD_TOKEN')
+TOKEN = os.environ('TOKEN')
 #os.chdir(r'C:\Users\ra\Desktop\pythonstf\dis')
 #prefix avah
 def get_prefix(client, message):
