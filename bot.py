@@ -614,4 +614,3 @@ async def sedev(ctx):
 
         
 bot.run(TOKEN)
-"""client.run("NzYwODg1MDY1NDQ1MTQ2NjI0.X3SjcA.kMfl8iqJByXvHXHHusoCjEC8Y7Y") """
