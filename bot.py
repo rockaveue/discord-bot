@@ -5,6 +5,7 @@ import discord
 import youtube_dl
 import json
 import asyncio
+import random
 # import numpy as np
 from dotenv import load_dotenv
 from discord.ext import commands,tasks
@@ -35,6 +36,7 @@ status = cycle(['hithere', 'prefix(--)', '--help'])
 texts = ['hithere', 'prefix(--)', '--help']
 myguild = 760862411564515368
 m = {}
+sedvuud = []
 rname = "role"
 rnumber = 0
 @bot.event
@@ -55,7 +57,10 @@ async def on_ready():
     with open("users.json", "r") as j:
         m = json.load(j)
         j.close()
-    
+    with open('mysedev.txt','r') as f:
+        for i in f:
+            a = i[:-1]
+            sedvuud.append(a)
     if len(m) == 0:
         m = {}
         for member in guild.members:
@@ -254,7 +259,7 @@ async def help(ctx):
     helptext = ""
     i = 1
     for command in bot.commands:
-        helptext+=f"{command}\t"
+        helptext+=f"{command}\t  "
         i = i + 1
         if i % 3 == 0:
             helptext += "\n"
@@ -554,8 +559,8 @@ async def on_message(message):
 async def testRole(ctx):
     member = ctx.author
     Role = discord.utils.get(member.guild.roles, name="testRole")
-    await member.author.add_roles(Role)
-    await ctx.send(f"{member.author.mention}, {Role} role-той боллоо")
+    await member.add_roles(Role)
+    await ctx.send(f"{member.mention}, {Role} role-той боллоо")
 
 @bot.command()
 @commands.has_permissions(administrator = True)
@@ -565,6 +570,48 @@ async def changeCh(ctx, *, new_name):
 @commands.has_permissions(administrator = True)
 async def changeCh1(ctx, channel: discord.VoiceChannel, *, new_name):
     await channel.edit(name = new_name)    
+huuchinNer = {}
+@bot.command()
+@commands.has_permissions(administrator = True)
+async def changeback(ctx):
+    b = []
+    for i,j in huuchinNer.items():
+        # channel = bot.get_channel(f"{j[1]}")
+        print(j[1])
+        myguilda = bot.get_guild(myguild)
+        channel = get(myguilda.voice_channels, name = j[0], id = j[1] ) 
+        print(channel)
+        print(i)
+        b.append(i)
+        await channel.edit(name = i)
+    for i in b:
+        del huuchinNer[i]
 
+@bot.command()
+async def sedev(ctx):
+    randomSedev = sedvuud[random.randint(0, len(sedvuud) - 1)]
+    # odoo baigaa ner huuchin nerend baigaag shalgaj baina
+    if any(ctx.author.voice.channel.name in k for k in huuchinNer.values()):
+        for i, j in huuchinNer:
+            if ctx.author.voice.channel.name == j:
+                # herev baival solino
+                huuchinNer[i] = [randomSedev, ctx.author.voice.channel.id]
+    else:
+        # baihgui bol shineer uusgene
+        huuchinNer[ctx.author.voice.channel.name] = [randomSedev, ctx.author.voice.channel.id]
+    
+    # print(huuchinNer[ctx.author.id])
+    await ctx.send(randomSedev)
+    voice_state = ctx.author.voice
+    if not voice_state is None:
+        randomSedev = randomSedev[0:50]
+        print(huuchinNer[ctx.author.voice.channel.name])
+        await voice_state.channel.edit(name = f"{randomSedev}")
+        print('awaitied i think')
+    else:
+        print('ur code is trash')
+        
+
+        
 bot.run(TOKEN)
 """client.run("NzYwODg1MDY1NDQ1MTQ2NjI0.X3SjcA.kMfl8iqJByXvHXHHusoCjEC8Y7Y") """
