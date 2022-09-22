@@ -2,23 +2,25 @@
 import os
 import re
 import discord
-import youtube_dl
+# TODO music
+# import youtube_dl
 import json
 import asyncio
 import random
 # import numpy as np
-# from dotenv import load_dotenv
+from dotenv import load_dotenv
 from discord.ext import commands,tasks
 from discord.utils import get
 from itertools import cycle
 
-# load_dotenv()
-# TOKEN = os.getenv('DISCORD_TOKEN')
-TOKEN = os.environ('TOKEN')
+load_dotenv()
+TOKEN = os.getenv('TOKEN')
+# TOKEN = os.environ('TOKEN')
 #os.chdir(r'C:\Users\ra\Desktop\pythonstf\dis')
 #prefix avah
+prefixes_file = "assets/prefixes.json"
 def get_prefix(client, message):
-    with open('prefixes.json', 'r') as f:
+    with open(prefixes_file, 'r') as f:
         prefixes = json.load(f)
         f.close()
     return prefixes[str(message.guild.id)]
@@ -28,10 +30,11 @@ def is_it_me(ctx):
     return ctx.author.id == 413609867258101760
 
 #utga onooj bn
-intents = discord.Intents.default()
+intents = discord.Intents.all()
 intents.members = True
 #client = discord.Client(intents=intents)
 bot = commands.Bot(command_prefix = get_prefix, intents=intents)
+# print (bot.__dict__)
 
 status = cycle(['hithere', 'prefix(--)', '--help'])
 texts = ['hithere', 'prefix(--)', '--help']
@@ -51,14 +54,14 @@ async def on_ready():
         f'{bot.user} is connected to the following guild: \n' 
         f'{guild.name} (id: {guild.id})'
     ) """
-    #print(discord.Client.get_guild(myguild).members)
+    # print(discord.Client.get_guild(myguild).members)
     #for member in guild.members:
         #print(member)
     print(bot.get_guild(myguild).member_count)
-    with open("users.json", "r") as j:
+    with open("assets/users.json", "r") as j:
         m = json.load(j)
         j.close()
-    with open('mysedev.txt','r') as f:
+    with open('assets/mysedev.txt','r') as f:
         for i in f:
             a = i[:-1]
             sedvuud.append(a)
@@ -68,11 +71,11 @@ async def on_ready():
             if not member.bot:
                 #print(member)
                 m[str(member.id)] = {"level" : 1, "xp" : 0, "messageCountdown" : 0, "stage" : 0}
-                with open("users.json", "w") as j:
+                with open("assets/users.json", "w") as j:
                     json.dump(m, j, indent=4)
                     j.close()
     #await bot.change_presence(activity=discord.Game('prefix(--)'), status=discord.Status.idle)
-    await bot.change_presence(activity=discord.Game('depressed game'))
+    await bot.change_presence(activity=discord.Game('nothing'))
     #await change_presence(game=discord.Game(name="hithere", type=1))
     while True:
         try:
@@ -98,24 +101,24 @@ async def on_member_join(member):
     await channel.send(f"{member} орж ирлээ!") """
     m[str(member.id)] = {"level": 1, "xp" : 0, "messageCountdown" : 0, "stage" : 0}
     channel = bot.get_channel(760884501969895496) # replace id with the welcome channel's id
-    await channel.send(f"{member.mention} has arrived!")
+    await channel.send(f"{member.mention} орж ирлээ!")
 @bot.event
 async def on_guild_join(guild):
-    with open('prefixes.json', 'r') as f:
+    with open(prefixes_file, 'r') as f:
         prefixes = json.load(f)
         f.close()
     prefixes[str(guild.id)] = '--'
-    with open('prefixes.json', 'w') as f:
+    with open(prefixes_file, 'w') as f:
         json.dump(prefixes, f, indent = 4)
         f.close()
 
 @bot.event
 async def on_guild_remove(guild):
-    with open('prefixes.json', 'r') as f:
+    with open(prefixes_file, 'r') as f:
         prefixes = json.load(f)
         f.close()
     prefixes.pop(str(guild.id))
-    with open('prefixes.json', 'w') as f:
+    with open(prefixes_file, 'w') as f:
         json.dump(prefixes, f, indent = 4)
         f.close()
 # @bot.event
@@ -128,24 +131,55 @@ async def on_guild_remove(guild):
 @bot.command()
 @commands.has_permissions(administrator = True)
 async def changePrefix(ctx, prefix):
-    with open('prefixes.json', 'r') as f:
+    with open(prefixes_file, 'r') as f:
         prefixes = json.load(f)
     prefixes[str(ctx.guild.id)] = prefix
     texts[1] = 'prefix('+prefix+')'
     texts[2] = prefix+'help'
     # status = cycle(['hithere', f'prefix({texts[1]})', f'{texts[2]}help'])
-    with open('prefixes.json', 'w') as f:
+    with open(prefixes_file, 'w') as f:
         json.dump(prefixes, f, indent = 4)
     #client.loop.create_task(bot.change_presence(activity=discord.Game(next(cycle(texts)))))
     await ctx.send(f'Prefix {prefix} болж солигдлоо')
+
+def getEmoji(emoji):
+    return str(discord.utils.get(bot.emojis, name=emoji))
+
+availableEmotes = ['WAYTOODANK', 'TriSad', 'tiredTom', 'vibePls', 'iron95pls', 'TeaTime', 'CLAP', 'WineTime', 'lickL', 'TriDance', 'BOOBA', 'modCheck', 'gachiBASS', 'WifeCheck', 'DonoWall', 'FEELSWAYTOOGOOD', 'catJAM', 'thisisfine', 'xqcTechno', 'xqcTake', 'xqcMald', 'FeelsRainMan', 'xqcSlam', 'Pepepls', 'PepegaPls', 'gachipls', 'ayayaJAM', 'FeelsLagMan', 'pepeD']
+
+# send gifs
+@bot.event
+async def on_message(message):
+    prefix = get_prefix(0, message)
+    messageWithoutPrefix = message.content.replace(prefix, '')
+    if messageWithoutPrefix in availableEmotes:
+        await message.channel.send(getEmoji(messageWithoutPrefix))
+    else:
+        await bot.process_commands(message)
 
 #commands
 @bot.command()
 async def pzda(ctx):
     await ctx.send('pzda2')
-# @bot.command()
-# async def ping(ctx):
-#     await ctx.send(f'pong {round(bot.latency * 1000)}ms')
+@bot.command()
+async def emotes(ctx):
+    helptext = ""
+    i = 1
+    for command in availableEmotes:
+        helptext+=f"{command}\t  "
+        i = i + 1
+        if i % 3 == 0:
+            helptext += "\n"
+    #helptext+="\t"
+    embed = discord.Embed(
+        color=discord.Colour(0x1e385b)
+    )
+    embed.add_field(name='Emotes',value=helptext)
+    await ctx.send(embed=embed)
+
+@bot.command()
+async def ping(ctx):
+    await ctx.send(f'pong {round(bot.latency * 1000)}ms')
 @bot.command()
 async def zailpzda(ctx):
     await ctx.send('chi uuruu zail')
@@ -190,6 +224,7 @@ async def madge(ctx):
     msg = await ctx.channel.send('R u mad?')
     await msg.add_reaction(str(discord.utils.get(bot.emojis, name='Madge')))
 
+# lvl stuff
 @bot.command()
 async def getcd(ctx):
     await ctx.send(f"{m[str(ctx.author.id)]['messageCountdown']} секунд дутуу байна")
@@ -532,7 +567,7 @@ async def on_message(message):
     #if message.content == "--stowp" and message.author.id == 413609867258101760:
     # if not id in m:
     #     m[id] = {"xp" : 0, "messageCountdown" : 0}
-    #     with open("users.json", "w") as j:
+    #     with open("assets/users.json", "w") as j:
     #         json.dump(m, j)
     #     #await bot.close()
     # if message == "--xp":
@@ -550,7 +585,7 @@ async def on_message(message):
                     await message.author.add_roles(Role)
                     await message.channel.send(f"{message.author.mention}, {Role}-г авлаа")
                 
-            with open("users.json", "w") as j:
+            with open("assets/users.json", "w") as j:
                 json.dump(m, j, indent=4)
                 j.close()
     await bot.process_commands(message) """
