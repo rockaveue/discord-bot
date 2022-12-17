@@ -41,8 +41,12 @@ texts = ['hithere', 'prefix(--)', '--help']
 myguild = 760862411564515368
 m = {}
 sedvuud = []
+availableEmotes = []
 rname = "role"
 rnumber = 0
+with open('assets/emotes.txt','r') as f:
+    availableEmotes = f.read().split('\n')
+
 @bot.event
 async def on_ready():
     print('Logged on.')
@@ -145,8 +149,6 @@ async def changePrefix(ctx, prefix):
 def getEmoji(emoji):
     return str(discord.utils.get(bot.emojis, name=emoji))
 
-availableEmotes = ['WAYTOODANK', 'TriSad', 'tiredTom', 'vibePls', 'iron95pls', 'TeaTime', 'CLAP', 'WineTime', 'lickL', 'TriDance', 'BOOBA', 'modCheck', 'gachiBASS', 'WifeCheck', 'DonoWall', 'FEELSWAYTOOGOOD', 'catJAM', 'thisisfine', 'xqcTechno', 'xqcTake', 'xqcMald', 'FeelsRainMan', 'xqcSlam', 'Pepepls', 'PepegaPls', 'gachipls', 'ayayaJAM', 'FeelsLagMan', 'pepeD']
-
 # send gifs
 @bot.event
 async def on_message(message):
@@ -176,6 +178,14 @@ async def emotes(ctx):
     )
     embed.add_field(name='Emotes',value=helptext)
     await ctx.send(embed=embed)
+
+@bot.command()
+@commands.has_permissions(administrator = True)
+async def addEmote(ctx, emote):
+    with open('assets/emotes.txt', 'a') as file:
+        file.write(f"\n{emote}")
+        availableEmotes.append(emote)
+        await ctx.send('Emote added')
 
 @bot.command()
 async def ping(ctx):
